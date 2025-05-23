@@ -4,13 +4,14 @@
 
 - npm create vite@latest => npm install => npm run dev
 - Configure TailwindCSS
--
+- Configure Firebase (npm run build  > firebase deploy --only hosting)
 
 # Features
 
 - Login/Sign Up
 
   - Sign In / SignUp form
+  - Firebase
   - redirect to Browse page
 
 - Browse Page
