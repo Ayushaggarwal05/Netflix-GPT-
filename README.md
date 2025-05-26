@@ -4,7 +4,8 @@
 
 - npm create vite@latest => npm install => npm run dev
 - Configure TailwindCSS
-- Configure Firebase (npm run build  > firebase deploy --only hosting)
+- Configure clerk for authentication
+
 
 # Features
 

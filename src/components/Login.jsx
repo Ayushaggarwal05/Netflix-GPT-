@@ -1,47 +1,96 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { useSignIn, useSignUp, useClerk } from "@clerk/clerk-react";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState();
+  const [codeSent, setCodeSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
   const email = useRef(null);
   const password = useRef(null);
 
-  const handleButtonClick = () => {
-    //Validate the form
-    const message = checkValidData(email.current.value, password.current.value);
-    setErrorMessage(message);
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+  const { setActive } = useClerk();
 
-    if (message) return;
-
-    if (!isSignInForm) {
-      // Sign Up Logic
-      createUserWithEmailAndPassword(
-        auth,
+  const handleSignUp = async () => {
+    try {
+      const message = checkValidData(
         email.current.value,
         password.current.value
-      )
-        .then((userCredential) => {
-          const user = userCredential.user;
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(errorCode + "-" + errorMessage);
-          // ..
-        });
+      );
+      setErrorMessage(message);
+      if (message) return;
+
+      await signUp.create({
+        emailAddress: email.current.value,
+        password: password.current.value,
+      });
+
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+      setCodeSent(true);
+    } catch (err) {
+      setErrorMessage(err.errors?.[0]?.message || "Something went wrong.");
+    }
+  };
+
+  const handleVerifyEmail = async () => {
+    try {
+      const result = await signUp.attemptEmailAddressVerification({
+        code: verificationCode,
+      });
+
+      if (result.status === "complete") {
+        await setActive({ session: result.createdSessionId });
+        alert("Sign-up successful!");
+        setIsSignInForm(true);
+        setCodeSent(false);
+        setVerificationCode("");
+      } else {
+        console.log("Verification incomplete", result);
+      }
+    } catch (err) {
+      setErrorMessage(err.errors?.[0]?.message || "Verification failed.");
+    }
+  };
+
+  const handleSignIn = async () => {
+    try {
+      const result = await signIn.create({
+        identifier: email.current.value,
+        password: password.current.value,
+      });
+
+      if (result.status === "complete") {
+        await setActive({ session: result.createdSessionId });
+        alert("Signed in successfully!");
+      } else {
+        console.log("Additional steps required", result);
+      }
+    } catch (err) {
+      setErrorMessage(err.errors?.[0]?.message || "Sign-in failed.");
+    }
+  };
+
+  const handleButtonClick = async () => {
+    if (isSignInForm) {
+      await handleSignIn();
+    } else if (codeSent) {
+      await handleVerifyEmail();
     } else {
-      // Sign In Logic
+      await handleSignUp();
     }
   };
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
+    setCodeSent(false);
+    setVerificationCode("");
+    setErrorMessage("");
   };
 
   return (
@@ -57,37 +106,51 @@ const Login = () => {
         onSubmit={(e) => e.preventDefault()}
         className="w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-xl opacity-85">
         <h1 className="font-bold text-3xl py-4">
-          {isSignInForm ? "Sign In" : "Sign Up"}
+          {isSignInForm ? "Sign In" : codeSent ? "Verify Email" : "Sign Up"}
         </h1>
-        {!isSignInForm && (
+
+        {!isSignInForm && !codeSent && (
           <input
             type="text"
             placeholder="Full Name"
             className="my-4 p-4 w-full bg-gray-700"
           />
         )}
+
         <input
           ref={email}
           type="text"
-          placeholder="Email Address "
+          placeholder="Email Address"
           className="my-4 p-4 w-full bg-gray-700"
         />
         <input
           ref={password}
           type="password"
-          placeholder="Password "
+          placeholder="Password"
           className="my-4 p-4 w-full bg-gray-700"
         />
-        <p className="text-red-500 font-bold  py-2">{errorMessage}</p>
+
+        {!isSignInForm && codeSent && (
+          <input
+            type="text"
+            placeholder="Enter verification code"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            className="my-4 p-4 w-full bg-gray-700"
+          />
+        )}
+
+        <p className="text-red-500 font-bold py-2">{errorMessage}</p>
         <button
           className="p-4 my-3 bg-red-700 w-full rounded-lg cursor-pointer"
           onClick={handleButtonClick}>
-          {isSignInForm ? "Sign In" : "Sign Up"}
+          {isSignInForm ? "Sign In" : codeSent ? "Verify Email" : "Sign Up"}
         </button>
+
         <p className="py-4 cursor-pointer" onClick={toggleSignInForm}>
           {isSignInForm
             ? "New to Netflix? Sign Up Now"
-            : "Already Registered.. Sign In Now"}
+            : "Already Registered? Sign In"}
         </p>
       </form>
     </div>
