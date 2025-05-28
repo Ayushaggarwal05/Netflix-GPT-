@@ -2,8 +2,11 @@ import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
 import { useSignIn, useSignUp, useClerk } from "@clerk/clerk-react";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState();
   const [codeSent, setCodeSent] = useState(false);
@@ -46,6 +49,14 @@ const Login = () => {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+
+        dispatch(
+          addUser({
+            id: result.userId,
+            email: email.current.value,
+          })
+        );
+
         alert("Sign-up successful!");
         setIsSignInForm(true);
         setCodeSent(false);
@@ -67,6 +78,14 @@ const Login = () => {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
+
+        dispatch(
+          addUser({
+            id: result.userId,
+            email: email.current.value,
+          })
+        );
+
         alert("Signed in successfully!");
       } else {
         console.log("Additional steps required", result);
