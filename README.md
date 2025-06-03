@@ -5,6 +5,7 @@
 - npm create vite@latest => npm install => npm run dev
 - Configure TailwindCSS
 - Configure clerk for authentication
+- Register TMDB API & create an app & get access token
 
 
 # Features
