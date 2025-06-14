@@ -4,6 +4,7 @@ import { checkValidData } from "../utils/validate";
 import { useSignIn, useSignUp, useClerk } from "@clerk/clerk-react";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { BG_URL } from "../utils/constant";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -116,10 +117,7 @@ const Login = () => {
     <div>
       <Header />
       <div className="absolute">
-        <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/202ac35e-1fca-44f0-98d9-ea7e8211a07c/web/IN-en-20250512-TRIFECTA-perspective_688b8c03-78cb-46a6-ac1c-1035536f871a_large.jpg"
-          alt="Background"
-        />
+        <img src={BG_URL} alt="Background" />
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
