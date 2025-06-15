@@ -1,10 +1,7 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { OPENAI_KEY } from "./constant";
 
-const openai = new OpenAI({
-  apiKey: "AIzaSyBNK473IvuN-lYJWjkTzWAHUMfAy6RaB9U", // This is the default and can be omitted
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-  dangerouslyAllowBrowser: true, // 🧨 enables browser usage , someone can see my key better to use a backend
-});
+const genAI = new GoogleGenerativeAI(OPENAI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-export default openai;
+export default model;

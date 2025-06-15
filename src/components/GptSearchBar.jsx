@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import lang from "../utils/languageConstant";
 import { useSelector } from "react-redux";
 import openai from "../utils/openai";
+import model from "../utils/openai";
 
 const GptSearchBar = () => {
   const langKey = useSelector((store) => store.config.lang);
@@ -14,15 +15,14 @@ const GptSearchBar = () => {
       searchText.current.value +
       ". only give 5 movies , comman separated  like the example  result given ahead . Example Result : Gadar , Shiddat , Don , Sholay , Koi MIl Gaya.  and also don't repeat movies name.";
 
-    const gptResults = await openai.chat.completions.create({
-      model: "gemini-2.0-flash",
-      messages: [
-        { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: gptQuery },
-      ],
-    });
-
-    console.log(gptResults.choices[0].message);
+    try {
+      const result = await model.generateContent(gptQuery);
+      const response = await result.response;
+      const text = response.text();
+      console.log(text);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
