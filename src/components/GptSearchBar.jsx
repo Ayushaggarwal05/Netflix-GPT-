@@ -3,6 +3,7 @@ import lang from "../utils/languageConstant";
 import { useSelector } from "react-redux";
 import openai from "../utils/openai";
 import model from "../utils/openai";
+import getChatCompletion from "../utils/openai";
 
 const GptSearchBar = () => {
   const langKey = useSelector((store) => store.config.lang);
@@ -16,12 +17,10 @@ const GptSearchBar = () => {
       ". only give 5 movies , comman separated  like the example  result given ahead . Example Result : Gadar , Shiddat , Don , Sholay , Koi MIl Gaya.  and also don't repeat movies name.";
 
     try {
-      const result = await model.generateContent(gptQuery);
-      const response = await result.response;
-      const text = response.text();
-      console.log(text);
+      const result = await getChatCompletion(gptQuery);
+      console.log(result.message);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error getting movie recommendations:", error);
     }
   };
 
