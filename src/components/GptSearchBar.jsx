@@ -15,14 +15,14 @@ const GptSearchBar = () => {
       ". only give 5 movies , comman separated  like the example  result given ahead . Example Result : Gadar , Shiddat , Don , Sholay , Koi MIl Gaya.  and also don't repeat movies name.";
 
     const gptResults = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gemini-2.0-flash",
       messages: [
-        { role: "developer", content: "Talk like a pirate." },
+        { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: gptQuery },
       ],
     });
 
-    console.log(gptResults.choices);
+    console.log(gptResults.choices[0].message);
   };
 
   return (
