@@ -1,31 +1,58 @@
 import React, { useRef } from "react";
 import lang from "../utils/languageConstant";
-import { useSelector } from "react-redux";
-import openai from "../utils/openai";
-import model from "../utils/openai";
+import { useDispatch, useSelector } from "react-redux";
 import getChatCompletion from "../utils/openai";
+import { API_OPTIONS } from "../utils/constant";
+import { addGptMoviResult } from "../utils/gptSlice";
 
 const GptSearchBar = () => {
+  const dispatch = useDispatch();
   const langKey = useSelector((store) => store.config.lang);
   const searchText = useRef(null);
+
+  const searchMovieTMDB = async (movie) => {
+    const data = await fetch(
+      "https://api.themoviedb.org/3/search/movie?query=" +
+        movie +
+        "&include_adult=false&language=en-US&page=1",
+      API_OPTIONS
+    );
+
+    const json = await data.json();
+    return json.results; // for all movies related  and down there specific movie
+    // return json.results.filter(
+    //   (result) => result.title.toLowerCase() === movie.trim().toLowerCase()
+    // );
+  };
 
   const handleGptSearchClick = async () => {
     //Make an API call to GPT API and get movie result
     const gptQuery =
-      "Act as a Movie recommand system and suggest some movies for the query : " +
+      "You are a Movie Recommendation System. Based on the query: " +
       searchText.current.value +
-      ". only give 5 movies , comman separated  like the example  result given ahead . Example Result : Gadar , Shiddat , Don , Sholay , Koi MIl Gaya.  and also don't repeat movies name.";
+      ", suggest exactly 5 relevant movie names, comma-separated (e.g., Gadar, Shiddat, Don, Sholay, Koi Mil Gaya). " +
+      "Return only movie names — no explanation, no extra text. Do not repeat movie names within or across responses. " +
+      "Each response must return a different set of movies if asked again. If no suggestions are available, return nothing.";
 
-    try {
-      const result = await getChatCompletion(gptQuery);
-      console.log(result.message);
-    } catch (error) {
-      console.error("Error getting movie recommendations:", error);
+    const result = await getChatCompletion(gptQuery);
+    // console.log(result.message);
+    const gptMovies = result.message.split(",");
+    console.log(gptMovies);
+
+    if (!result.message) {
+      console.error("Error getting movie recommendations:");
     }
+
+    const promiseArray = gptMovies.map((movies) => searchMovieTMDB(movies)); // provide me [ promise , promise , promise , promise , promise]
+    const tmdbResults = await Promise.all(promiseArray);
+    console.log(tmdbResults);
+    dispatch(
+      addGptMoviResult({ movieNames: gptMovies, movieResults: tmdbResults })
+    );
   };
 
   return (
-    <div className="py-[10%] flex justify-center">
+    <div className="py-[8%] flex justify-center">
       <form
         className="w-1/2 bg-black grid grid-cols-12"
         onSubmit={(e) => e.preventDefault()}>

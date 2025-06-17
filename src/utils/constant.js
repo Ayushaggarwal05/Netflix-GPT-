@@ -20,3 +20,8 @@ export const SUPPORTED_LANGUAGES = [
   { identifier: "hindi", name: "Hindi" },
   { identifier: "spanish", name: "Spanish" },
 ];
+
+// export const API_BASE_URL = "http://localhost:3001";
+// export const ENDPOINTS = {
+//   CHAT: "/api/chat",
+// };
