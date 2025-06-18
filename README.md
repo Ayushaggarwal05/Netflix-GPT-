@@ -6,7 +6,9 @@
 - Configure TailwindCSS
 - Configure clerk for authentication
 - Register TMDB API & create an app & get access token
-
+- Making app store for my project
+- Fetch video data from youtube
+- Multi Language Feature in my app
 
 # Features
 
