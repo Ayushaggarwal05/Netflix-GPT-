@@ -38,11 +38,11 @@ const Header = () => {
   const isUserSignedIn = clerkUser || reduxUser;
 
   return (
-    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex justify-between">
-      <img className="w-46 " src={LOGO} alt="logo" />
+    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black   z-10 flex flex-col md:flex-row justify-between">
+      <img className="w-46 mx-auto md:mx-0" src={LOGO} alt="logo" />
 
       {isUserSignedIn && (
-        <div className="flex p-2">
+        <div className="flex p-2 justify-between">
           {showGptSearch && (
             <select
               className="bg-gray-800 text-white rounded-lg p-2 m-2"
@@ -62,7 +62,7 @@ const Header = () => {
           <img
             src="https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-qo9h82134t9nv0j0.jpg"
             alt="usericon_logo"
-            className="w-12 h-12 rounded-2xl"
+            className="w-12 h-12 rounded-2xl hidden md:block"
           />
           <button
             onClick={handleSignOut}
