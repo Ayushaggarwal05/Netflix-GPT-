@@ -1,8 +1,10 @@
 // import { API_BASE_URL, ENDPOINTS } from "./constant";
 
 const getChatCompletion = async (prompt) => {
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+  const isProd = import.meta.env.PROD;
+  const API_BASE_URL = isProd
+    ? ""
+    : import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
   const CHAT_ENDPOINT = import.meta.env.VITE_API_ENDPOINT_CHAT || "/api/chat";
 
   try {
