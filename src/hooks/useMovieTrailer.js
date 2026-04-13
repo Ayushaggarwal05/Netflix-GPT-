@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API_OPTIONS } from "../utils/constant";
 import { addTrailerVideo } from "../utils/moviesSlice";
 
 const useMovieTrailer = (movieId) => {
@@ -13,10 +12,7 @@ const useMovieTrailer = (movieId) => {
     // console.log(movieId);
 
     const data = await fetch(
-      "https://api.themoviedb.org/3/movie/" +
-        movieId +
-        "/videos?language=en-US",
-      API_OPTIONS
+      "http://localhost:3001/api/trailer/" + movieId
     );
 
     const json = await data.json();

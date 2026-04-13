@@ -2,7 +2,6 @@ import React, { useRef } from "react";
 import lang from "../utils/languageConstant";
 import { useDispatch, useSelector } from "react-redux";
 import getChatCompletion from "../utils/openai";
-import { API_OPTIONS } from "../utils/constant";
 import { addGptMoviResult } from "../utils/gptSlice";
 
 const GptSearchBar = () => {
@@ -12,10 +11,7 @@ const GptSearchBar = () => {
 
   const searchMovieTMDB = async (movie) => {
     const data = await fetch(
-      "https://api.themoviedb.org/3/search/movie?query=" +
-        movie +
-        "&include_adult=false&language=en-US&page=1",
-      API_OPTIONS
+      "http://localhost:3001/api/search/movie?query=" + encodeURIComponent(movie)
     );
 
     const json = await data.json();
